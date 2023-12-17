@@ -72,7 +72,7 @@ public class LoginTests {
     }
 
     @Test
-    void negative400Test() {
+    void negative404Test() {
         String authData = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }"; // BAD PRACTICE
 
         given()
