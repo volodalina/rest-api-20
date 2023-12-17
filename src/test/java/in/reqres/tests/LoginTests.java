@@ -1,4 +1,4 @@
-package in.reqres;
+package in.reqres.tests;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,17 +6,17 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 
-public class RegisterTests {
+public class LoginTests {
     /*
-    1. Make request (POST) to https://reqres.in/api/register
-        with body { "email": "eve.holt@reqres.in", "password": "pistol" }
+    1. Make request (POST) to https://reqres.in/api/login
+        with body { "email": "eve.holt@reqres.in", "password": "cityslicka" }
     2. Get response { "token": "QpwL5tke4Pnpja7X4" }
     3. Check token is QpwL5tke4Pnpja7X4
      */
 
     @Test
-    void successfulRegisterTest() {
-        String authData = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\" }"; // BAD PRACTICE
+    void successfulLoginTest() {
+        String authData = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }"; // BAD PRACTICE
 
         given()
                 .log().uri()
@@ -25,12 +25,11 @@ public class RegisterTests {
                 .contentType(JSON)
                 .body(authData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
                 .statusCode(200)
-                .body("id", is(4))
                 .body("token", is("QpwL5tke4Pnpja7X4"));
     }
 
@@ -45,7 +44,7 @@ public class RegisterTests {
                 .contentType(JSON)
                 .body(authData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -55,7 +54,7 @@ public class RegisterTests {
 
     @Test
     void missingEmailTest() {
-        String authData = "{ \"email\": \"\", \"password\": \"pistol\" }"; // BAD PRACTICE
+        String authData = "{ \"email\": \"\", \"password\": \"cityslicka\" }"; // BAD PRACTICE
 
         given()
                 .log().uri()
@@ -64,7 +63,7 @@ public class RegisterTests {
                 .contentType(JSON)
                 .body(authData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -73,8 +72,8 @@ public class RegisterTests {
     }
 
     @Test
-    void negative400Test() {
-        String authData = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\" }"; // BAD PRACTICE
+    void negative404Test() {
+        String authData = "{ \"email\": \"eve.holt@reqres.in\", \"password\": \"cityslicka\" }"; // BAD PRACTICE
 
         given()
                 .log().uri()
@@ -82,7 +81,7 @@ public class RegisterTests {
                 .log().body()
                 .body(authData)
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("https://reqres.in/api/login")
                 .then()
                 .log().status()
                 .log().body()
@@ -90,4 +89,17 @@ public class RegisterTests {
                 .body("error", is("Missing email or username"));
     }
 
+    @Test
+    void negative415Test() {
+        given()
+                .log().uri()
+                .log().method()
+                .log().body()
+                .when()
+                .post("https://reqres.in/api/login")
+                .then()
+                .log().status()
+                .log().body()
+                .statusCode(415);
+    }
 }
