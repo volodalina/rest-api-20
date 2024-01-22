@@ -127,4 +127,67 @@ public class LoginExtendedTests {
         assertEquals("QpwL5tke4Pnpja7X4", loginResponse.getToken());
     }
 
+    @Test
+    void successfulLoginWithStepsTest() {
+        LoginBodyLombokModel authData = new LoginBodyLombokModel();
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("cityslicka");
+
+        LoginResponseLombokModel loginResponse = step("Make request", () ->
+                given()
+                        .log().uri()
+                        .log().method()
+                        .log().body()
+                        .filter(withCustomTemplates())
+                        .contentType(JSON)
+                        .body(authData)
+                        .when()
+                        .post("https://reqres.in/api/login")
+                        .then()
+                        .log().status()
+                        .log().body()
+                        .statusCode(200)
+                        .extract().as(LoginResponseLombokModel.class));
+
+        step("Check response", () ->
+                assertEquals("QpwL5tke4Pnpja7X4", loginResponse.getToken()));
+    }
+
+    @Test
+    void successfulLoginWithSpecsTest() {
+        LoginBodyLombokModel authData = new LoginBodyLombokModel();
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("cityslicka");
+
+        LoginResponseLombokModel loginResponse = step("Make request", () ->
+                given(loginRequestSpec)
+                        .body(authData)
+                        .when()
+                        .post("/login")
+                        .then()
+                        .spec(loginResponseSpec)
+                        .extract().as(LoginResponseLombokModel.class));
+
+        step("Check response", () ->
+                assertEquals("QpwL5tke4Pnpja7X4", loginResponse.getToken()));
+    }
+
+    @Test
+    void missingPasswordTest() {
+        LoginBodyLombokModel authData = new LoginBodyLombokModel();
+        authData.setEmail("eve.holt@reqres.in");
+
+        MissingPasswordLombokModel missingPasswordResponse = step("Make request", () ->
+                given(loginRequestSpec)
+                        .body(authData)
+                        .when()
+                        .post("/login")
+                        .then()
+                        .spec(missingPassword400Spec)
+                        .extract().as(MissingPasswordLombokModel.class));
+
+        step("Check response 400", () ->
+                assertEquals("Missing password", missingPasswordResponse.getError()));
+    }
+
 }
